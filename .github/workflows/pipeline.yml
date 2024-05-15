@@ -43,5 +43,8 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-west-2
 
+      - name: Zip lambda.py
+        run: zip lambda.zip lambda.py
+
       - name: Upload zip to S3
         run: aws s3 cp lambda.zip s3://raw-bucket-snackshop/
