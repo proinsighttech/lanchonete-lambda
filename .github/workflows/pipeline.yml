@@ -44,4 +44,4 @@ jobs:
           aws-region: us-west-2
 
       - name: Upload zip to S3
-        run: aws s3 cp lambda.zip s3://raw-bucket-snackshop/lambda.zip
+        run: aws s3 cp lambda.zip s3://raw-bucket-snackshop/
