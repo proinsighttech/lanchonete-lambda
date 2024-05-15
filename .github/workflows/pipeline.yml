@@ -23,7 +23,7 @@ jobs:
 
       - name: Check if S3 bucket exists
         run: |
-          if aws s3api head-bucket --bucket raw-bucket-snackshop-dev 2>/dev/null; then
+          if aws s3api head-bucket --bucket raw-bucket-snackshop 2>/dev/null; then
             echo "Bucket exists"
           else
             echo "Bucket does not exist"
@@ -44,4 +44,4 @@ jobs:
           aws-region: us-west-2
 
       - name: Upload zip to S3
-        run: aws s3 cp lambda.zip s3://raw-bucket-snackshop-dev/lambda.zip
+        run: aws s3 cp lambda.zip s3://raw-bucket-snackshop/lambda.zip
