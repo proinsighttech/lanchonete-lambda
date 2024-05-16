@@ -20,7 +20,7 @@ def zip_lambda(file_name, zip_name):
 if __name__ == '__main__':
     event = {
         'authorizationToken': '529.982.247-25',
-        'methodArn': 'arn:aws:execute-api:us-west-2:279044386247:232mlon7u7/api/GET/request'
+        'methodArn': 'arn:aws:execute-api:us-west-2:279044386247:232mlon7u7/GET/request'
     }
     
     zip_lambda("lambda.py", "lambda.zip")
