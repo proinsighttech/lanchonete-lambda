@@ -66,6 +66,8 @@ def new_connection():
     connection = connect(**parameters)
     try:
         yield connection
+    except Exception as e:
+        print("An error occurred:", e)
     finally:
         if connection and connection.is_connected():
             connection.close()

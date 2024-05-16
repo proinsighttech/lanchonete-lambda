@@ -43,6 +43,22 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-west-2
 
+      - name: Replace DB_HOST in lambda.py
+        run: |
+          sed -i "s|os.getenv('DB_HOST')|\'${{ secrets.DB_HOST }}\'|" lambda.py
+
+      - name: Replace DB_USERNAME in lambda.py
+        run: |
+          sed -i "s|os.getenv('DB_USERNAME')|${{ secrets.DB_USERNAME }}|" lambda.py    
+
+      - name: Replace DB_PASSWORD in lambda.py
+        run: |
+          sed -i "s|os.getenv('DB_PASSWORD')|${{ secrets.DB_PASSWORD }}|" lambda.py   
+      
+      - name: Replace DB_NAME in lambda.py
+        run: |
+          sed -i "s|os.getenv('DB_NAME')|${{ secrets.DB_NAME }}|" lambda.py   
+
       - name: Zip lambda.py
         run: zip lambda.zip lambda.py
 
