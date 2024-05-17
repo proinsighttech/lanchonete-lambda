@@ -82,10 +82,12 @@ jobs:
 
       - name: Create deployment package
         run: |
-          mkdir lambda
-          cp lambda.py lambda/
-          pip install mysql-connector-python -t lambda/
-          zip -r lambda.zip lambda/
+          mkdir lambda_package
+          cp lambda.py lambda_package/
+          pip install mysql-connector-python -t lambda_package/
+          cd lambda_package
+          zip -r lambda.zip .
+          mv lambda.zip ../
         
       - name: Upload zip to S3
         run: aws s3 cp lambda.zip s3://raw-bucket-snackshop/
