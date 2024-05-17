@@ -70,15 +70,15 @@ jobs:
 
       - name: Replace DB_USERNAME in lambda.py
         run: |
-          sed -i "s|os.getenv('DB_USERNAME')|${{ secrets.DB_USERNAME }}|" lambda.py    
+          sed -i "s|os.getenv('DB_USERNAME')|\'${{ secrets.DB_USERNAME }}\'|" lambda.py    
 
       - name: Replace DB_PASSWORD in lambda.py
         run: |
-          sed -i "s|os.getenv('DB_PASSWORD')|${{ secrets.DB_PASSWORD }}|" lambda.py   
+          sed -i "s|os.getenv('DB_PASSWORD')|\'${{ secrets.DB_PASSWORD }}\'|" lambda.py   
       
       - name: Replace DB_NAME in lambda.py
         run: |
-          sed -i "s|os.getenv('DB_NAME')|${{ secrets.DB_NAME }}|" lambda.py   
+          sed -i "s|os.getenv('DB_NAME')|\'${{ secrets.DB_NAME }}\'|" lambda.py   
 
       - name: Create deployment package
         run: |
