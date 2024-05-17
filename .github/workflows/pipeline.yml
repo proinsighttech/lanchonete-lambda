@@ -80,8 +80,12 @@ jobs:
         run: |
           sed -i "s|os.getenv('DB_NAME')|${{ secrets.DB_NAME }}|" lambda.py   
 
-      - name: Zip lambda.py
-        run: zip lambda.zip lambda.py
-
+      - name: Create deployment package
+        run: |
+          mkdir lambda
+          cp lambda.py lambda/
+          pip install mysql-connector-python -t lambda/
+          zip -r lambda.zip lambda/
+        
       - name: Upload zip to S3
         run: aws s3 cp lambda.zip s3://raw-bucket-snackshop/
