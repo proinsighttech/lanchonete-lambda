@@ -8,16 +8,10 @@ on:
         required: true
         default: 'warning'
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-
-on:
-  push:
-    branches:
+    branches: 
       - main
-  merge:
-    branches:
+  pull_request:
+    branches: 
       - main
 
 jobs:
