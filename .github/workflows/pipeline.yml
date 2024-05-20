@@ -62,9 +62,9 @@ jobs:
       # - name: Terraform Apply
       #   run: terraform -chdir=terraform apply -var="integration=false" --auto-approve
 
-      - name: Terraform Destroy
-        if: failure()
-        run: terraform -chdir=terraform destroy --auto-approve
+      - name: Clear S3 bucket
+        run: |
+          aws s3 rm s3://raw-bucket-snackshop/ --recursive
       
       - name: Check if S3 bucket exists
         run: |
