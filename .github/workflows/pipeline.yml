@@ -59,8 +59,8 @@ jobs:
       - name: Terraform Init
         run: terraform -chdir=terraform init
 
-      # - name: Terraform Apply
-      #   run: terraform -chdir=terraform apply -var="integration=false" --auto-approve
+      - name: Terraform Apply
+        run: terraform -chdir=terraform apply -var="integration=false" --auto-approve
 
       - name: Clear S3 bucket
         run: |
