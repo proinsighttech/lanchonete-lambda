@@ -1,37 +1,45 @@
 import os
 import re
 import json
+import logging
 from mysql.connector import connect
 from contextlib import contextmanager
 
 
 def lambda_handler(event, context):
+
+    logging.info('event: {}'.format(event))
+    logging.info('context: {}'.format(context))
+
+
     cpf = event['authorizationToken']
 
     try:
-        # Check if the CPF is valid
+        logging.info('Check if the CPF is valid')
         if validate_cpf(cpf):
-            # Check if CPF is in the Database
+            logging.info('Check if CPF is in the Database')
             user = get_user_by_cpf(cpf)
+            logging.info('User: {}'.format(user))
             if user:
                 response = generatePolicy(user, 'Allow', event['methodArn'])
+                logging.info(response)
                 return response
 
         raise Exception('Unauthorized')
 
     except BaseException as e:
-        print('unauthorized', e)
+        logging.error('unauthorized', e)
         return 'unauthorized'  # Return a 500 error
 
 
 def validate_cpf(cpf):
     cpf = ''.join(re.findall(r'\d', str(cpf)))
     if (not cpf) or (len(cpf) < 11):
-        print('CPF inválido, menor que 11 dígitos')
+        logging.error('CPF inválido, menor que 11 dígitos')
         return False
 
     if cpf == cpf[0] * len(cpf):
-        print('CPF inválido, todos os dígitos são iguais')
+        logging.error('CPF inválido, todos os dígitos são iguais')
         return False
 
     sum_of_products = sum((10 - i) * int(cpf[i]) for i in range(9))
@@ -39,7 +47,7 @@ def validate_cpf(cpf):
     if expected_digit == 10:
         expected_digit = 0
     if int(cpf[9]) != expected_digit:
-        print('CPF inválido, 1º dígito inválido')
+        logging.error('CPF inválido, 1º dígito inválido')
         return False
 
     sum_of_products = sum((11 - i) * int(cpf[i]) for i in range(10))
@@ -47,7 +55,7 @@ def validate_cpf(cpf):
     if expected_digit == 10:
         expected_digit = 0
     if int(cpf[10]) != expected_digit:
-        print('CPF inválido, 2º dígito inválido')
+        logging.error('CPF inválido, 2º dígito inválido')
         return False
 
     return True
@@ -65,10 +73,12 @@ def new_connection():
 
     connection = connect(**parameters)
     try:
+        logging.info('Trying to connect to the database')
         yield connection
     except Exception as e:
-        print("An error occurred:", e)
+        logging.error("An error occurred:", e)
     finally:
+        logging.info('Closing connection')
         if connection and connection.is_connected():
             connection.close()
 
@@ -81,7 +91,7 @@ def get_user_by_cpf(cpf):
             cursor.execute(sql, (cpf,))
             result = cursor.fetchone()
         except Exception as e:
-            print("An error occurred:", e)
+            logging.error("An error occurred:", e)
     return result
 
 
