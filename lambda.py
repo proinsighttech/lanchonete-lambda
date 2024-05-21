@@ -21,7 +21,7 @@ def lambda_handler(event, context):
             print('User: {}'.format(user))
             if user:
                 response = generatePolicy(user, 'Allow', event['methodArn'])
-                print(response)
+                print(json.dumps(response))
                 return response
 
         raise Exception('Unauthorized')
@@ -107,9 +107,8 @@ def generatePolicy(user, effect, resource):
         statementOne['Resource'] = resource
         policyDocument['Statement'] = [statementOne]
         authResponse['policyDocument'] = policyDocument
-    authResponse['context'] = {
-        "name": user[0],
-        "cpf": user[1]
-    }
-    authResponse_JSON = json.dumps(authResponse)
-    return authResponse_JSON
+        authResponse['context'] = {
+            "name": user[0],
+            "cpf": user[1]
+        }
+    return authResponse
