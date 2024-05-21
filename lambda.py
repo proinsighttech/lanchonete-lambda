@@ -108,7 +108,7 @@ def generatePolicy(user, effect, resource):
         policyDocument['Statement'] = [statementOne]
         authResponse['policyDocument'] = policyDocument
         authResponse['context'] = {
-            "name": user[0],
+            "authorizer": "user authorized",
             "cpf": user[1]
         }
     return authResponse
