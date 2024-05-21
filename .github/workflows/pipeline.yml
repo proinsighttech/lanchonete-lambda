@@ -61,15 +61,12 @@ jobs:
 
       - name: Terraform Apply
         run: terraform -chdir=terraform apply -var="integration=false" --auto-approve
-
-      - name: Clear S3 bucket
-        run: |
-          aws s3 rm s3://raw-bucket-snackshop/ --recursive
       
-      - name: Check if S3 bucket exists
+      - name: Check if S3 bucket exists and clear it
         run: |
           if aws s3api head-bucket --bucket raw-bucket-snackshop 2>/dev/null; then
             echo "Bucket exists"
+            aws s3 rm s3://raw-bucket-snackshop/ --recursive
           else
             echo "Bucket does not exist"
           fi
