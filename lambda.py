@@ -8,8 +8,8 @@ from contextlib import contextmanager
 def lambda_handler(event, context):
 
     print('event: {}'.format(event))
-    # cpf = event['queryStringParameters']['cpf']
-    cpf = event['authorizationToken']
+    cpf = event['queryStringParameters']['cpf']
+    # cpf = event['authorizationToken']
 
     try:
         print('Check if the CPF is valid')
