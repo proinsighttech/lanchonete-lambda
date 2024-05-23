@@ -8,7 +8,7 @@ on:
         required: true
         default: 'warning'
   push:
-    branches: [ main ]
+    branches: [ development ]
   pull_request:
     branches: [ main ]
 
