@@ -1,0 +1,9 @@
+.venv
+lambda.zip
+__pycache__
+terraform/.terraform
+terraform/.terraform.lock.hcl
+terraform/terraform.tfstate
+terraform/terraform.tfstate.backup
+lambda_package/
+terraform.tfstate

@@ -1,0 +1,98 @@
+name: CI/CD Pipeline
+
+on:
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+    
+      - name: Zip lambda.py
+        run: zip lambda.zip lambda.py
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-2
+      
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.0.0
+  
+      - name: Terraform Init
+        run: terraform -chdir=terraform init
+  
+      - name: Terraform Plan
+        run: terraform -chdir=terraform plan
+
+  deploy:
+    timeout-minutes: 10
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-2
+      
+      - name: Terraform Init
+        run: terraform -chdir=terraform init
+
+      - name: Terraform Apply
+        run: terraform -chdir=terraform apply --auto-approve
+      
+      - name: Check if S3 bucket exists and clear it
+        run: |
+          if aws s3api head-bucket --bucket raw-bucket-snackshop 2>/dev/null; then
+            echo "Bucket exists"
+            aws s3 rm s3://raw-bucket-snackshop/ --recursive
+          else
+            echo "Bucket does not exist"
+          fi
+
+      - name: Replace DB_HOST in lambda.py
+        run: |
+          sed -i "s|os.getenv('DB_HOST')|\'${{ secrets.DB_HOST }}\'|" lambda.py
+
+      - name: Replace DB_USERNAME in lambda.py
+        run: |
+          sed -i "s|os.getenv('DB_USERNAME')|\'${{ secrets.DB_USERNAME }}\'|" lambda.py    
+
+      - name: Replace DB_PASSWORD in lambda.py
+        run: |
+          sed -i "s|os.getenv('DB_PASSWORD')|\'${{ secrets.DB_PASSWORD }}\'|" lambda.py   
+      
+      - name: Replace DB_NAME in lambda.py
+        run: |
+          sed -i "s|os.getenv('DB_NAME')|\'${{ secrets.DB_NAME }}\'|" lambda.py   
+
+      - name: Create deployment package
+        run: |
+          mkdir lambda_package
+          cp lambda.py lambda_package/
+          pip install mysql-connector-python -t lambda_package/
+          cd lambda_package
+          zip -r lambda.zip .
+          mv lambda.zip ../
+        
+      - name: Upload zip to S3
+        run: aws s3 cp lambda.zip s3://raw-bucket-snackshop/
